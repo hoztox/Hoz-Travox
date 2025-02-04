@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+
+
+
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -52,7 +55,7 @@ class Admin(models.Model):
         return self.username
 
 
-from django.db import models
+ 
 
 class Subscription(models.Model):
     plan_name = models.CharField(max_length=100, unique=True)
@@ -256,3 +259,5 @@ class Expenses(models.Model):
 
     def __str__(self):
         return f"{self.expense_account} - {self.amount}"
+
+
