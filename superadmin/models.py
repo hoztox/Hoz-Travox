@@ -204,7 +204,7 @@ class PaymentReceived(models.Model):
     payment_number = models.CharField(max_length=11, blank=True, null=True)
     deposit_to = models.ForeignKey(Banking, on_delete=models.SET_NULL, null=True, blank=True)
     reference = models.CharField(max_length=255, blank=True, null=True)
-    date = models.DateField()
+    date = models.DateField(null =True ,blank=True)
     invoice_no = models.ForeignKey(Invoice, on_delete=models.SET_NULL, null=True, blank=True)
     invoice_amount = models.IntegerField(default=0)  
     amount_due = models.IntegerField(default=0)  
