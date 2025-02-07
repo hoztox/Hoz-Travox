@@ -654,3 +654,42 @@ class Neutral(models.Model):
     )
     def __str__(self):
         return self.name
+    
+ 
+
+class Quotation(models.Model):
+    quotation_date = models.DateField(null=True, blank=True)
+    ref_no = models.CharField(max_length=100, unique=True,null=True, blank=True)
+    customer_name = models.CharField(max_length=255,null=True, blank=True)
+    customer_details = models.TextField(null=True, blank=True)
+    pax_details = models.TextField(null=True, blank=True)
+    currency = models.CharField(max_length=10, default="INR",null=True, blank=True)
+    total_fare = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,null=True, blank=True)
+    remarks = models.TextField (null=True, blank=True)
+    quatation_no = models.CharField(max_length=255, unique=True, editable=True, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+       
+        if not self.quatation_no:
+            last_asset = Quotation.objects.order_by('-id').first()
+            if last_asset and last_asset.quatation_no:
+                last_number = int(last_asset.quatation_no[2:])  
+                new_number = last_number + 1
+            else:
+                new_number = 1001   
+
+            
+            self.quatation_no = f"QT{new_number:04d}"
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Quotation {self.ref_no} - {self.customer_name}"
+
+class ServiceDetail(models.Model):
+    quotation = models.ForeignKey(Quotation, on_delete=models.CASCADE, related_name="services")
+    service_name = models.CharField(max_length=255,null=True, blank=True)
+    fare = models.DecimalField(max_digits=10, decimal_places=2,null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.service_name} - {self.fare}"

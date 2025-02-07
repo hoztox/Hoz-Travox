@@ -63,5 +63,8 @@ urlpatterns = [
     path('neutral/', NeutralListCreateAPIView.as_view(), name='customer-list-create'),  
     path('neutral/<int:pk>/', NeutralRetrieveUpdateDestroyAPIView.as_view(), name='customer-detail'),  
     path('neutral/parent_acc/', NeutralListView.as_view(), name='customer-list-create-parent'),
+    path('quotations/', QuotationListCreateAPIView.as_view(), name='quotation-list-create'),
+    path('quotations/<int:pk>/', QuotationDetailAPIView.as_view(), name='quotation-detail'),
+    path('quotations/filter/', QuotationFilterAPIView.as_view(), name='quotation-filter'),
 ] 
  

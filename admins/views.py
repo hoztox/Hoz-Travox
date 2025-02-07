@@ -912,3 +912,65 @@ class NeutralListView(generics.ListAPIView):
      
         return Neutral.objects.filter(create_parent_acc=True)
     
+
+ 
+
+class QuotationListCreateAPIView(APIView):
+  
+    def get(self, request):
+        quotations = Quotation.objects.all()
+        serializer = QuotationSerializer(quotations, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = QuotationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class QuotationDetailAPIView(APIView):
+  
+    def get(self, request, pk):
+        quotation = get_object_or_404(Quotation, pk=pk)
+        serializer = QuotationSerializer(quotation)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, pk):
+        quotation = get_object_or_404(Quotation, pk=pk)
+        serializer = QuotationSerializer(quotation, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        quotation = get_object_or_404(Quotation, pk=pk)
+        quotation.delete()
+        return Response({"message": "Quotation deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+
+ 
+class QuotationFilterAPIView(APIView):
+    def post(self, request):
+        quatation_no = request.data.get('quatation_no')  
+        ref_no = request.data.get('ref_no')  
+        from_date = request.data.get('from_date')   
+        to_date = request.data.get('to_date')   
+
+        queryset = Quotation.objects.all()
+
+     
+        if quatation_no:
+            queryset = queryset.filter(quatation_no=quatation_no)
+
+        if ref_no:
+            queryset = queryset.filter(ref_no=ref_no)
+
+        if from_date and to_date:
+            from_date = parse_date(from_date)
+            to_date = parse_date(to_date)
+            queryset = queryset.filter(quotation_date__range=[from_date, to_date])
+
+        serializer = QuotationSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

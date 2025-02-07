@@ -108,3 +108,41 @@ class NeutralSerializer(serializers.ModelSerializer):
     class Meta:
         model =   Neutral
         fields = '__all__'
+
+
+from rest_framework import serializers
+from .models import Quotation, ServiceDetail
+
+class ServiceDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ServiceDetail
+        fields = ['id', 'service_name', 'fare']
+
+class QuotationSerializer(serializers.ModelSerializer):
+    services = ServiceDetailSerializer(many=True)
+
+    class Meta:
+        model = Quotation
+        fields = '__all__'
+
+    def create(self, validated_data):
+        services_data = validated_data.pop('services', [])
+        quotation = Quotation.objects.create(**validated_data)
+        for service in services_data:
+            ServiceDetail.objects.create(quotation=quotation, **service)
+        return quotation
+
+    def update(self, instance, validated_data):
+        services_data = validated_data.pop('services', [])
+        
+       
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+   
+        instance.services.all().delete()
+        for service in services_data:
+            ServiceDetail.objects.create(quotation=instance, **service)
+
+        return instance
